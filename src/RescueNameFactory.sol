@@ -53,13 +53,13 @@ contract RescueNameFactory is Owned, ReentrancyGuard {
 
             while (j < length) {
                 require(vaultNameList[vaults[i]][names[i][j]], "Name not in vault");
-                // TODO: Check if we are currently (time) within deadline (expiryOfName - max_deadline)
                 bytes32 labelhash = keccak256(abi.encodePacked(names[i][j]));
-                baseregistrar.nameExpires(uint256(labelhash));
+                uint256 expiresAt = baseregistrar.nameExpires(uint256(labelhash));
+                // TODO: Check if we are currently (time) within deadline (expiryOfName - max_deadline)
 
                 controller.renew{value: price}(names[i][j], RENEW_DURATION * 24 * 60 * 60); 
                 unchecked {
-                    ++i;
+                    ++j;
                 }
             }
 
@@ -68,6 +68,10 @@ contract RescueNameFactory is Owned, ReentrancyGuard {
             // uint256 reward = // TODO: calculate reward
             // payable(payee).transfer(reward);
             // vaultBalance[vaults[i]] -= reward;
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
