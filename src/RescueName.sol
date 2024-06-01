@@ -2,13 +2,11 @@
 pragma solidity ^0.8.19;
 
 import "solmate/auth/Owned.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "./interfaces/IETHRegistrarController.sol";
 import "./interfaces/IBaseRegistrar.sol";
 
-contract RescueNameFactory is Owned, ReentrancyGuard {
+contract RescueName is Owned {
 
     event NameAdded(uint256 vault, string name);
     event NameRemoved(uint256 vault, string name);
@@ -41,7 +39,7 @@ contract RescueNameFactory is Owned, ReentrancyGuard {
         string[][] calldata names,
         uint256 price,
         address payable payee
-    ) public payable nonReentrant() {
+    ) public payable {
         uint256 length = names.length;
         uint256 i = 0;
         while (i < length) {
@@ -107,5 +105,14 @@ contract RescueNameFactory is Owned, ReentrancyGuard {
         }
     }
 
+    /* Owner Only Functions */
 
+    function withdraw() public onlyOwner {
+        payable(owner).transfer(this.balance);
+    }
+
+    function withdrawVault(uint256 vault) public onlyOwner {
+        vaultBalance[vault] = 0;
+        payable(owner).transfer(vaultBalance[vault]);
+    }
 }
