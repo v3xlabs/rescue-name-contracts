@@ -6,28 +6,29 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "./RescueName.sol";
+import "./interfaces/IETHRegistrarController.sol";
 
 contract RescueNameFactory is Owned, ReentrancyGuard {
 
-    IETHRegistrarContorller public controller;
-    address public rescueNameTemplate;
+    IETHRegistrarController public controller;
+    address payable public rescueNameTemplate;
     mapping(address => bool) public deployedContracts;
 
     event RescueNameVaultCreated(address newRescueNameVaultAddress);
 
-    constructor(address _rescueNameTemplate, IETHRegistrarController _controller) {
+    constructor(address payable _rescueNameTemplate, IETHRegistrarController _controller) Owned(msg.sender) {
         rescueNameTemplate = _rescueNameTemplate;
         controller = _controller;
         owner = msg.sender;
     }
 
-    function setRescueNameAddress(address _rescueNameTemplate) public onlyOwner {
+    function setRescueNameAddress(address payable _rescueNameTemplate) public onlyOwner {
         rescueNameTemplate = _rescueNameTemplate;
     }
 
-    function createVault(uint256 _min_renewal, uint256 deadline, uint256 renewReward) public payable {
+    function createVault(uint256 deadline, uint256 renewReward) public payable {
         address clone = Clones.clone(rescueNameTemplate);
-        RescueNameVault(clone).initialize(controller, _min_renewal, deadline, renewReward);
+        RescueNameVault(clone).initialize(controller, deadline, renewReward);
         emit RescueNameVaultCreated(clone);
 
         deployedContracts[clone] = true;

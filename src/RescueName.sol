@@ -5,32 +5,32 @@ import "solmate/auth/Owned.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-import "./ETHRegistrarController.sol";
+import "./interfaces/IETHRegistrarController.sol";
 
 contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
-    IUltraBulkRenewal controller;
+    IETHRegistrarController controller;
     uint256 public constant MAX_DEADLINE = 30;
     uint256 public RENEW_DURATION = 365 days;
-
+    bool public isActive;
+    uint256 public deadline;
     mapping(string => bool) public nameList;
 
-    constructor() {
+    constructor() Owned(msg.sender) {
         _disableInitializers();
     }
 
-    function initialize(IETHRegistrarController _controller, uint256 _min_renewal, uint256 deadline, uint256 renewReward) external payable initializer {
-        require(deadline >= MIN_DEADLINE && deadline <= MAX_DEADLINE , "Deadline overflow");
+    function initialize(IETHRegistrarController _controller, uint256 deadline, uint256 renewReward) external payable initializer {
+        require(deadline <= MAX_DEADLINE, "Deadline overflow");
 
         // TODO: Test if this gets the correct address
         owner = msg.sender;
-
+        isActive = true;
         controller = _controller;
-        MIN_RENEWAL_TIME = _min_renewal;
     }
 
     function editDeadline(uint256 deadline) public payable onlyOwner {
         require(deadline <= MAX_DEADLINE, "Deadline overflow");
-        vault.deadline = deadline;
+        deadline = deadline;
     }
 
     function toggleVault() public payable onlyOwner {
@@ -63,7 +63,7 @@ contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
         while (i < length) {
             require(nameList[names[i]], "Name not in provided vault");
             // TODO: Check if we are currently (time) within deadline (expiryOfName - max_deadline)
-            controller.renew{value: price}(names[i], duration);
+            controller.renew{value: price}(names[i], 365); // check if uint is in days or milliseconds
             unchecked {
                 ++i;
             }
@@ -75,7 +75,7 @@ contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
         // multisig.transfer(msg.value);
     }
 
-    receive() external payable {}
+    // receive() external payable {}
 
     // @dev Not needed?
     // function refund() external payable onlyOwner {
