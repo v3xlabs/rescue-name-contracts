@@ -3,11 +3,11 @@ pragma solidity ~0.8.17;
 
 // import "solmate/auth/Owned.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-import "./ETHRegistrarController.sol";
-import "./interaces/IUltraBulkRenewal.sol";
+// import "./ETHRegistrarController.sol";
+import "./interfaces/IUltraBulkRenewal.sol";
 import "./structs/RescueStructs.sol";
 
 contract RescueNameVault is Ownable, ReentrancyGuard, Initializable {

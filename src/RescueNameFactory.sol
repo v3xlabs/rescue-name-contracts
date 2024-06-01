@@ -3,10 +3,10 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "./RescueName.sol";
-import "./interaces/IUltraBulkRenewal.sol";
+import "./interfaces/IUltraBulkRenewal.sol";
 import "./structs/RescueStructs.sol";
 
 contract RescueNameFactory is Ownable, ReentrancyGuard {

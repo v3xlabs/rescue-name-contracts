@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPLv3
 pragma solidity ~0.8.17;
 
-import "./ETHRegistrarController.sol";
-import "./IUltraBulkRenewal.sol";
+// import "./ETHRegistrarController.sol";
+import "./interfaces/IUltraBulkRenewal.sol";
 // import "solmate/auth/Owned.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 struct VaultConfig {
     address owner;
