@@ -10,12 +10,15 @@ import "./interfaces/IBaseRegistrar.sol";
 
 contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
     IETHRegistrarController controller;
-    IBaseRegistrar baseregistrar = IBaseRegistrar(0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85); // hard coded for mainet deployment
+    IBaseRegistrar baseregistrar = IBaseRegistrar(0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85);
     uint256 public constant MAX_DEADLINE = 30;
     uint256 public RENEW_DURATION = 365 days;
     bool public isActive;
     uint256 public deadline;
     mapping(string => bool) public nameList;
+
+    // Event for when name gets added to vault
+    event NameAdded(address vault, string name);
 
     constructor() Owned(msg.sender) {
         _disableInitializers();
@@ -65,8 +68,9 @@ contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
         while (i < length) {
             require(nameList[names[i]], "Name not in provided vault");
             // TODO: Check if we are currently (time) within deadline (expiryOfName - max_deadline)
-            // this bs has to use uints instead of string 
-            // baseregistrar.nameExpires()
+            bytes32 labelhash = keccak256(abi.encodePacked(names[i]));
+            baseregistrar.nameExpires(labelhash);
+
             controller.renew{value: price}(names[i], 365 * 24 * 60 * 60); 
             unchecked {
                 ++i;
