@@ -6,9 +6,11 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 import "./interfaces/IETHRegistrarController.sol";
+import "./interfaces/IBaseRegistrar.sol";
 
 contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
     IETHRegistrarController controller;
+    IBaseRegistrar baseregistrar = IBaseRegistrar(0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85); // hard coded for mainet deployment
     uint256 public constant MAX_DEADLINE = 30;
     uint256 public RENEW_DURATION = 365 days;
     bool public isActive;
@@ -63,7 +65,9 @@ contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
         while (i < length) {
             require(nameList[names[i]], "Name not in provided vault");
             // TODO: Check if we are currently (time) within deadline (expiryOfName - max_deadline)
-            controller.renew{value: price}(names[i], 365); // check if uint is in days or milliseconds
+            // this bs has to use uints instead of string 
+            // baseregistrar.nameExpires()
+            controller.renew{value: price}(names[i], 365 * 24 * 60 * 60); 
             unchecked {
                 ++i;
             }
@@ -75,7 +79,7 @@ contract RescueNameVault is Owned, ReentrancyGuard, Initializable {
         // multisig.transfer(msg.value);
     }
 
-    // receive() external payable {}
+    receive() external payable {}
 
     // @dev Not needed?
     // function refund() external payable onlyOwner {

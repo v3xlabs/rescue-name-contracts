@@ -12,9 +12,9 @@ contract RescueNameFactory is Owned, ReentrancyGuard {
 
     IETHRegistrarController public controller;
     address payable public rescueNameTemplate;
-    mapping(address => bool) public deployedContracts;
+    mapping(RescueNameVault => bool) public deployedContracts;
 
-    event RescueNameVaultCreated(address newRescueNameVaultAddress);
+    event RescueNameVaultCreated(RescueNameVault newRescueNameVaultAddress);
 
     constructor(address payable _rescueNameTemplate, IETHRegistrarController _controller) Owned(msg.sender) {
         rescueNameTemplate = _rescueNameTemplate;
@@ -27,8 +27,8 @@ contract RescueNameFactory is Owned, ReentrancyGuard {
     }
 
     function createVault(uint256 deadline, uint256 renewReward) public payable {
-        address clone = Clones.clone(rescueNameTemplate);
-        RescueNameVault(clone).initialize(controller, deadline, renewReward);
+        RescueNameVault clone = RescueNameVault(payable(Clones.clone(rescueNameTemplate)));
+        clone.initialize(controller, deadline, renewReward);
         emit RescueNameVaultCreated(clone);
 
         deployedContracts[clone] = true;
