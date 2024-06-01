@@ -30,8 +30,18 @@ contract RescueName is Owned {
     constructor() Owned(msg.sender) {}
 
     function createVault(uint256 deadline, uint256 renewReward) public payable {
+        require(deadline <= MAX_DEADLINE, "Deadline too high");
+
+        vaultDeadline[lastVaultId] = deadline;
+        vaultRenewReward[lastVaultId] = renewReward;
+        vaultToOwner[lastVaultId] = msg.sender;
+        vaultBalance[lastVaultId] = msg.value;
+
         emit RescueNameVaultCreated(lastVaultId, msg.sender);
-        lastVaultId++;
+
+        unchecked {
+            lastVaultId++;
+        }
     }
 
     function execute(
