@@ -108,7 +108,7 @@ contract RescueName is Owned {
     /* Owner Only Functions */
 
     function withdraw() public onlyOwner {
-        payable(owner).transfer(this.balance);
+        payable(owner).transfer(address(this).balance);
     }
 
     function withdrawVault(uint256 vault) public onlyOwner {
