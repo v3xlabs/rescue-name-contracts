@@ -36,6 +36,7 @@ contract RescueName is Owned {
         vaultRenewReward[lastVaultId] = renewReward;
         vaultToOwner[lastVaultId] = msg.sender;
         vaultBalance[lastVaultId] = msg.value;
+        vaultIsActive[lastVaultId] = true;
 
         emit RescueNameVaultCreated(lastVaultId, msg.sender);
 
@@ -63,9 +64,10 @@ contract RescueName is Owned {
                 require(vaultNameList[vaults[i]][names[i][j]], "Name not in vault");
                 bytes32 labelhash = keccak256(abi.encodePacked(names[i][j]));
                 uint256 expiresAt = baseregistrar.nameExpires(uint256(labelhash));
-                // TODO: Check if we are currently (time) within deadline (expiryOfName - max_deadline)
+                // TODO: include grace period
+                require(expiresAt - block.timestamp <= vaultDeadline[vaults[i]], "Deadline not met");
 
-                controller.renew{value: price}(names[i][j], RENEW_DURATION * 24 * 60 * 60); 
+                controller.renew{value: price}(names[i][j], RENEW_DURATION); 
                 unchecked {
                     ++j;
                 }
@@ -89,11 +91,15 @@ contract RescueName is Owned {
         vaultBalance[vault] += msg.value;
     }
 
-    function toggleVaultActive(uint256 vault) public payable onlyOwner {
+    function toggleVaultActive(uint256 vault) public payable {
+        require(msg.sender == vaultToOwner[vault], "Not owner");
+
         vaultIsActive[vault] = !vaultIsActive[vault];
     }
 
-    function toggleName(uint256 vault, string calldata name) public payable onlyOwner() {
+    function toggleName(uint256 vault, string calldata name) public payable {
+        require(msg.sender == vaultToOwner[vault], "Not owner");
+
         vaultNameList[vault][name] = !vaultNameList[vault][name];
 
         if (vaultNameList[vault][name]) {
@@ -103,7 +109,9 @@ contract RescueName is Owned {
         }
     }
 
-    function supplyList(uint256 vault, string[] calldata names) public payable onlyOwner {
+    function supplyList(uint256 vault, string[] calldata names) public payable {
+        require(msg.sender == vaultToOwner[vault], "Not owner");
+
         uint256 length = names.length;
         uint256 i = 0;
         while (i < length) {
@@ -121,8 +129,9 @@ contract RescueName is Owned {
         payable(owner).transfer(address(this).balance);
     }
 
-    function withdrawVault(uint256 vault) public onlyOwner {
+    function withdrawVault(uint256 vault) public {
+        require(msg.sender == vaultToOwner[vault] || msg.sender == owner, "Not owner");
         vaultBalance[vault] = 0;
-        payable(owner).transfer(vaultBalance[vault]);
+        payable(msg.sender).transfer(vaultBalance[vault]);
     }
 }
