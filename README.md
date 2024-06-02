@@ -1,4 +1,4 @@
-# 🛟 [rescue.name](https://rescue.name)
+# 🛟 [rescue.name](https://rescue.name) Contracts
 
 An decentralized vault-based ENS renewal manager.
 
