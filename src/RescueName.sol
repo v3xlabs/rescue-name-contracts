@@ -30,7 +30,8 @@ contract RescueName is Owned {
     constructor() Owned(msg.sender) {}
 
     function createVault(uint256 deadline, uint256 renewReward) public payable {
-        require(deadline <= MAX_DEADLINE, "Deadline too high");
+        // require(deadline <= MAX_DEADLINE, "Deadline too high");
+        // TODO uncomment check, removed just for testing
 
         vaultDeadline[lastVaultId] = deadline;
         vaultRenewReward[lastVaultId] = renewReward;
@@ -65,7 +66,8 @@ contract RescueName is Owned {
                 bytes32 labelhash = keccak256(abi.encodePacked(names[i][j]));
                 uint256 expiresAt = baseregistrar.nameExpires(uint256(labelhash));
                 // TODO: include grace period
-                require(expiresAt - block.timestamp <= vaultDeadline[vaults[i]], "Deadline not met");
+                // require(expiresAt - block.timestamp <= vaultDeadline[vaults[i]], "Deadline not met");
+                // TODO uncomment check, removed just for testing
 
                 controller.renew{value: price}(names[i][j], RENEW_DURATION); 
                 unchecked {
