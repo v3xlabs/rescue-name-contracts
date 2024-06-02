@@ -10,7 +10,7 @@ This repository contains the smart-contracts belonging to [v3xlabs/rescue-name](
 
 ## Deployments
 
-- `RescueName.sol` - `0xc1a2b52c855f947e2B62705A2ADDE9Aa87452760`
+- `RescueName.sol` - `0x8c82dd2f5Ad2E4F70d2710Cc5290e0D80e42191B`
 
 ## Copyright
 

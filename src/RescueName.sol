@@ -7,31 +7,13 @@ import "./interfaces/IETHRegistrarController.sol";
 import "./interfaces/IBaseRegistrar.sol";
 import "./interfaces/IPriceOracle.sol";
 
-// struct Price {
-//         uint256 base;
-//         uint256 premium;
-//     }
-
-// interface IPriceOracle {
-//     struct Price {
-//         uint256 base;
-//         uint256 premium;
-//     }
-// }
-
-// struct RentPrice { 
-//    string name;
-//    string duration;
-//    uint book_id;
-// }
-
 contract RescueName is Owned {
 
     event NameAdded(uint256 vault, string name);
     event NameRemoved(uint256 vault, string name);
 
     IBaseRegistrar public constant baseregistrar = IBaseRegistrar(0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85);
-    IETHRegistrarController public constant controller = IETHRegistrarController(0x253553366Da8546fC250F225fe3d25d0C782303b);
+    IETHRegistrarController public constant controller = IETHRegistrarController(0xFED6a969AaA60E4961FCD3EBF1A2e8913ac65B72);
 
     uint256 public constant MAX_DEADLINE = 30;
     uint256 public constant RENEW_DURATION = 365 days;
