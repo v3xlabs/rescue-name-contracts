@@ -5,6 +5,25 @@ import "solmate/auth/Owned.sol";
 
 import "./interfaces/IETHRegistrarController.sol";
 import "./interfaces/IBaseRegistrar.sol";
+import "./interfaces/IPriceOracle.sol";
+
+// struct Price {
+//         uint256 base;
+//         uint256 premium;
+//     }
+
+// interface IPriceOracle {
+//     struct Price {
+//         uint256 base;
+//         uint256 premium;
+//     }
+// }
+
+// struct RentPrice { 
+//    string name;
+//    string duration;
+//    uint book_id;
+// }
 
 contract RescueName is Owned {
 
@@ -46,20 +65,28 @@ contract RescueName is Owned {
         }
     }
 
+    function getPrice(uint256[] calldata vaults, 
+        string[][] calldata names,
+        uint256 price,
+        address payable payee) public view returns (uint256 result) {
+            uint256 length = names.length;
+            uint256 rentPrice = controller.rentPrice(names[0][0], RENEW_DURATION).base;
+            return rentPrice;
+    }
+
     function execute(
         uint256[] calldata vaults, 
         string[][] calldata names,
-        uint256 price,
         address payable payee
     ) public payable {
         uint256 length = names.length;
         uint256 i = 0;
+        uint256 price = controller.rentPrice(names[0][0], RENEW_DURATION).base;
         while (i < length) {
             require(vaultIsActive[vaults[i]], "Vault is not active");
 
             uint256 length = names.length;
             uint256 j = 0;
-            uint256 total = price * length;
 
             while (j < length) {
                 require(vaultNameList[vaults[i]][names[i][j]], "Name not in vault");
